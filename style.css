@@ -1,0 +1,30 @@
+* {
+	margin: 0px;
+	padding: 0px;
+	box-sizing: border-box;
+	position: relative;
+}
+
+.body {
+	/* IE6-9 fallback on horizontal gradient */
+}
+
+.input-div {
+	position: relative;
+	background: darkslateblue;
+	color: white;
+	display: flex;
+	justify-content: space-around;
+	padding: 20px;
+	width: 50%;
+}
+.content-container {
+	position: relative;
+	margin: auto;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	background: black;
+}
