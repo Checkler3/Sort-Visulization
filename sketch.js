@@ -1,13 +1,15 @@
 let values = [];
 let loops = 0;
 let j = 0;
-let numLines = 200;
+let numLines = 50;
 let speed;
 let counter = 1;
 let userInput;
 let firstTime = true;
 let sorting = false;
 let text;
+
+let states = [];
 
 // ===========================================
 // ============= p5.js Functions =============
@@ -18,13 +20,16 @@ function setup() {
 	cnv.parent('canvas-container');
 
 	//Initial setup
+
 	renderInput();
 	colorMode(HSB, height);
-	numLines = slider.value();
-	setSpeed(sel.value());
+	// numLines = slider.value();
+	numLines = 50;
+	setSpeed(selSpeed.value());
 	document.getElementById('num-of-lines').innerHTML = numLines;
 	for (i = 0; i < numLines; i++) {
 		values[i] = random(height);
+		states[i] = -1;
 	}
 	renderLines(values);
 }
@@ -33,9 +38,11 @@ function draw() {
 	background(0);
 
 	if (firstTime == true) {
+		quickSort(values, 0, values.length - 1);
 		renderLines(values);
 	} else {
-		bubbleSort(values);
+		quickSort(values, 0, values.length - 1);
+		// bubbleSort(values);
 		renderLines(values);
 		sorting = true;
 	}
@@ -45,6 +52,8 @@ function draw() {
 // ============= Custom Functions =============
 // ============================================
 
+// ==== Sort Functions ====
+
 // Bubble Sort
 function bubbleSort(arr) {
 	sorting = true;
@@ -53,6 +62,7 @@ function bubbleSort(arr) {
 		// Actually looping through the array and swaping when needed
 		if (j < arr.length - loops - 1) {
 			// How many swaps to do before rendering a new line in p5.js
+
 			for (i = 0; i < speed; i++) {
 				if (arr[j] > arr[j + 1]) {
 					swap(arr, j, j + 1);
@@ -72,19 +82,59 @@ function bubbleSort(arr) {
 	}
 }
 
-// Swap function for bubble sort
-function swap(arr, a, b) {
+// Quick Sort
+async function quickSort(arr, start, end) {
+	if (start >= end) {
+		return;
+	}
+	let pi = partition(arr, start, end);
+
+	await Promise.all([
+		quickSort(arr, start, pi - 1),
+		quickSort(arr, pi + 1, end)
+	]);
+}
+
+// Quick Sort Partition
+
+async function partition(arr, start, end) {
+	let pivotValue = arr[end];
+	let pivotIndex = start;
+	for (let i = start; i < end; i++) {
+		if (arr[i] < pivotValue) {
+			await swap(arr, i, pivotIndex);
+			pivotIndex++;
+		}
+	}
+
+	await swap(arr, pivotIndex, end);
+	return pivotIndex;
+}
+
+// ==== Support Functions ====
+
+// Swap function for sorts
+async function swap(arr, a, b) {
+	await sleep(200);
 	let temp = arr[a];
 	arr[a] = arr[b];
 	arr[b] = temp;
+}
+
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function renderLines(arr) {
 	for (let i = 0; i < arr.length; i++) {
 		let col = color(arr[i], height, height);
 		let location = map(i, 0, arr.length, 0, width);
+		if (states[i] === 1) {
+			fill('white');
+		} else {
+			fill(col);
+		}
 		stroke('black');
-		fill(col);
 		rect(location, height - arr[i], width / numLines, height);
 	}
 }
@@ -102,16 +152,24 @@ function renderInput() {
 
 	slider.input(changeLines);
 
-	// Create Selection Box
-	sel = createSelect();
-	sel.parent('input-div');
-	sel.class('select');
-	sel.option('One Step');
-	sel.option('Slow');
-	sel.option('Medium');
-	sel.option('Fast');
-	sel.option('Fastest');
-	sel.changed(changeSpeed);
+	// Create selSpeedection Box for Speed
+	selSpeed = createSelect();
+	selSpeed.parent('input-div');
+	selSpeed.class('selectSpeed');
+	selSpeed.option('One Step');
+	selSpeed.option('Slow');
+	selSpeed.option('Medium');
+	selSpeed.option('Fast');
+	selSpeed.option('Fastest');
+	selSpeed.changed(changeSpeed);
+
+	// Create selSpeedection Box for Algorithm
+	selAlgo = createSelect();
+	selAlgo.parent('input-div');
+	selAlgo.class('selAlgo');
+	selAlgo.option('Bubble Sort');
+	selAlgo.option('Quick Sort');
+	// selAlgo.changed(changeAlgorithm);
 
 	// Create Reset Button
 	button = createButton('Go!');
@@ -135,30 +193,7 @@ function changeLines() {
 }
 
 function changeSpeed() {
-	setSpeed(sel.value());
-}
-
-function resetAnimation() {
-	// If First time through, just start sort from current values
-	if (firstTime == true) {
-		bubbleSort(values);
-		firstTime = false;
-		sorting = true;
-		// If not first time, reset values to default and call draw
-	} else {
-		values = [];
-		loops = 0;
-		j = 0;
-		numLines = slider.value();
-		speed = 100;
-		counter = 1;
-		setSpeed(sel.value());
-		for (i = 0; i < numLines; i++) {
-			values[i] = random(height);
-			//values[i] = noise(i/100.0)*height;
-		}
-		draw();
-	}
+	setSpeed(selSpeed.value());
 }
 
 function setSpeed(value) {
@@ -172,5 +207,29 @@ function setSpeed(value) {
 		speed = 60;
 	} else {
 		speed = 500;
+	}
+}
+
+function resetAnimation() {
+	// If First time through, just start sort from current values
+	if (firstTime == true) {
+		quickSort(values, 0, values.length - 1);
+		// bubbleSort(values);
+		firstTime = false;
+		sorting = true;
+		// If not first time, reset values to default and call draw
+	} else {
+		values = [];
+		loops = 0;
+		j = 0;
+		numLines = slider.value();
+		speed = 100;
+		counter = 1;
+		setSpeed(selSpeed.value());
+		for (i = 0; i < numLines; i++) {
+			values[i] = random(height);
+			//values[i] = noise(i/100.0)*height;
+		}
+		draw();
 	}
 }
