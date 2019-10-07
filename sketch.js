@@ -32,17 +32,21 @@ function setup() {
 		states[i] = -1;
 	}
 	renderLines(values);
+
+	quickSort(values, 0, values.length - 1);
 }
 
 function draw() {
 	background(0);
 
 	if (firstTime == true) {
-		quickSort(values, 0, values.length - 1);
 		renderLines(values);
+		// quickSort(values, 0, values.length - 1);
+
+		// renderLines(values);
 	} else {
-		quickSort(values, 0, values.length - 1);
-		// bubbleSort(values);
+		// quickSort(values, 0, values.length - 1);
+		bubbleSort(values);
 		renderLines(values);
 		sorting = true;
 	}
@@ -87,12 +91,15 @@ async function quickSort(arr, start, end) {
 	if (start >= end) {
 		return;
 	}
-	let pi = partition(arr, start, end);
+	let pi = await partition(arr, start, end);
 
 	await Promise.all([
-		quickSort(arr, start, pi - 1),
-		quickSort(arr, pi + 1, end)
+		await quickSort(arr, start, pi - 1),
+		await quickSort(arr, pi + 1, end)
 	]);
+
+	// await quickSort(arr, start, pi - 1);
+	// await quickSort(arr, pi + 1, end);
 }
 
 // Quick Sort Partition
@@ -115,7 +122,7 @@ async function partition(arr, start, end) {
 
 // Swap function for sorts
 async function swap(arr, a, b) {
-	await sleep(200);
+	await sleep(10);
 	let temp = arr[a];
 	arr[a] = arr[b];
 	arr[b] = temp;
@@ -213,8 +220,8 @@ function setSpeed(value) {
 function resetAnimation() {
 	// If First time through, just start sort from current values
 	if (firstTime == true) {
-		quickSort(values, 0, values.length - 1);
-		// bubbleSort(values);
+		// quickSort(values, 0, values.length - 1);
+		bubbleSort(values);
 		firstTime = false;
 		sorting = true;
 		// If not first time, reset values to default and call draw
@@ -230,6 +237,8 @@ function resetAnimation() {
 			values[i] = random(height);
 			//values[i] = noise(i/100.0)*height;
 		}
+		// renderLines();
+		// quickSort(values, 0, values.length - 1);
 		draw();
 	}
 }
