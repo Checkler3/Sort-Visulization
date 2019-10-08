@@ -4,7 +4,6 @@ let j = 0;
 let numLines = 50;
 let speed;
 let counter = 1;
-let userInput;
 let firstTime = true;
 let sorting = false;
 let text;
@@ -23,8 +22,8 @@ function setup() {
 
 	renderInput();
 	colorMode(HSB, height);
-	// numLines = slider.value();
-	numLines = 50;
+	numLines = slider.value();
+	// numLines = 50;
 	setSpeed(selSpeed.value());
 	document.getElementById('num-of-lines').innerHTML = numLines;
 	for (i = 0; i < numLines; i++) {
@@ -32,12 +31,11 @@ function setup() {
 		states[i] = -1;
 	}
 	renderLines(values);
-
-	quickHoareSort(values, 0, values.length - 1);
+	// quickSort(values, 0, values.length - 1);
 }
 
 function draw() {
-	background(0);
+	background(100);
 
 	if (firstTime == true) {
 		renderLines(values);
@@ -46,7 +44,7 @@ function draw() {
 		// renderLines(values);
 	} else {
 		// quickSort(values, 0, values.length - 1);
-		bubbleSort(values);
+		//bubbleSort(values);
 		renderLines(values);
 		sorting = true;
 	}
@@ -60,7 +58,10 @@ function draw() {
 
 // Bubble Sort
 function bubbleSort(arr) {
-	sorting = true;
+	if ((sorting = false)) {
+		sorting = true;
+	}
+
 	// Tells many times needed to loop
 	if (loops < arr.length) {
 		// Actually looping through the array and swaping when needed
@@ -82,8 +83,11 @@ function bubbleSort(arr) {
 			loops++;
 		}
 	} else {
-		console.log('finish');
 	}
+	// else {
+	// 	sorting = false;
+	// 	console.log('finish');
+	// }
 }
 
 // Quick Sort
@@ -92,6 +96,7 @@ async function quickSort(arr, start, end) {
 		return;
 	}
 	let pi = await lomutoPartition(arr, start, end);
+	states[pi] = -1;
 
 	await Promise.all([
 		await quickSort(arr, start, pi - 1),
@@ -102,21 +107,47 @@ async function quickSort(arr, start, end) {
 	// await quickSort(arr, pi + 1, end);
 }
 
+async function lomutoPartition(arr, start, end) {
+	for (let i = start; i < end; i++) {
+		states[i] = 1;
+	}
+
+	let pivotValue = arr[end];
+	let pivotIndex = start;
+	states[pivotIndex] = 0;
+	for (let i = start; i < end; i++) {
+		if (arr[i] < pivotValue) {
+			await lomutoSwap(arr, i, pivotIndex);
+			states[pivotIndex] = -1;
+			pivotIndex++;
+			states[pivotIndex] = 0;
+		}
+	}
+
+	await lomutoSwap(arr, pivotIndex, end);
+	for (let i = start; i < end; i++) {
+		if (i != pivotIndex) {
+			states[i] = -1;
+		}
+	}
+	return pivotIndex;
+}
+
 // Quick Sort
-async function quickHoareSort(arr, start, end) {
+function quickHoareSort(arr, start, end) {
 	console.log('called quickHoareSort');
 	if (start >= end) {
 		return;
 	}
-	let pivot = await hoarePartition(arr, start, end);
+	let pivot = hoarePartition(arr, start, end);
 
 	if (start < pivot - 1) {
-		await quickHoareSort(arr, start, pivot - 1);
+		quickHoareSort(arr, start, pivot - 1);
 		console.log('called quickHoareSort');
 	}
 
 	if (end > pivot) {
-		await quickHoareSort(arr, pivot, end);
+		quickHoareSort(arr, pivot, end);
 	}
 
 	return arr;
@@ -127,21 +158,7 @@ async function quickHoareSort(arr, start, end) {
 
 // Quick Sort Partition
 
-async function lomutoPartition(arr, start, end) {
-	let pivotValue = arr[end];
-	let pivotIndex = start;
-	for (let i = start; i < end; i++) {
-		if (arr[i] < pivotValue) {
-			await swap(arr, i, pivotIndex);
-			pivotIndex++;
-		}
-	}
-
-	await swap(arr, pivotIndex, end);
-	return pivotIndex;
-}
-
-async function hoarePartition(arr, start, end) {
+function hoarePartition(arr, start, end) {
 	let pivotValue = Math.floor((start + end) / 2);
 
 	while (start < end) {
@@ -152,7 +169,7 @@ async function hoarePartition(arr, start, end) {
 			end--;
 		}
 		if (start <= end) {
-			await swap(arr, start, end);
+			swap(arr, start, end);
 			start++;
 			end--;
 		}
@@ -162,27 +179,39 @@ async function hoarePartition(arr, start, end) {
 
 // ==== Support Functions ====
 
-// Swap function for sorts
 async function swap(arr, a, b) {
-	await sleep(10);
 	let temp = arr[a];
 	arr[a] = arr[b];
 	arr[b] = temp;
 }
 
-function sleep(ms) {
+// Swap function for sorts
+async function lomutoSwap(arr, a, b) {
+	await sleep(2);
+	let temp = arr[a];
+	arr[a] = arr[b];
+	arr[b] = temp;
+}
+
+async function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function renderLines(arr) {
 	for (let i = 0; i < arr.length; i++) {
-		let col = color(arr[i], height, height);
-		let location = map(i, 0, arr.length, 0, width);
-		if (states[i] === 1) {
-			fill('white');
+		stroke('black');
+		if (states[i] == 0) {
+			fill('red');
+		} else if (states[i] == 1) {
+			fill('lightblue');
+		} else if (states[i] == 2) {
+			fill('lightgreen');
 		} else {
-			fill(col);
+			fill('white');
 		}
+		// let col = color(arr[i], height, height);
+		let location = map(i, 0, arr.length, 0, width);
+		// fill('lightblue');
 		stroke('black');
 		rect(location, height - arr[i], width / numLines, height);
 	}
@@ -263,10 +292,10 @@ function setSpeed(value) {
 function resetAnimation() {
 	// If First time through, just start sort from current values
 	if (firstTime == true) {
-		// quickSort(values, 0, values.length - 1);
-		bubbleSort(values);
+		quickSort(values, 0, values.length - 1);
+		// bubbleSort(values);
 		firstTime = false;
-		sorting = true;
+		sorting = false;
 		// If not first time, reset values to default and call draw
 	} else {
 		values = [];
@@ -280,7 +309,8 @@ function resetAnimation() {
 			values[i] = random(height);
 			//values[i] = noise(i/100.0)*height;
 		}
-		// renderLines();
+		// renderLines(values);
+		// bubbleSort(values);
 		// quickSort(values, 0, values.length - 1);
 		draw();
 	}
