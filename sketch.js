@@ -33,7 +33,7 @@ function setup() {
 	}
 	renderLines(values);
 
-	quickSort(values, 0, values.length - 1);
+	quickHoareSort(values, 0, values.length - 1);
 }
 
 function draw() {
@@ -91,7 +91,7 @@ async function quickSort(arr, start, end) {
 	if (start >= end) {
 		return;
 	}
-	let pi = await partition(arr, start, end);
+	let pi = await lomutoPartition(arr, start, end);
 
 	await Promise.all([
 		await quickSort(arr, start, pi - 1),
@@ -102,9 +102,32 @@ async function quickSort(arr, start, end) {
 	// await quickSort(arr, pi + 1, end);
 }
 
+// Quick Sort
+async function quickHoareSort(arr, start, end) {
+	console.log('called quickHoareSort');
+	if (start >= end) {
+		return;
+	}
+	let pivot = await hoarePartition(arr, start, end);
+
+	if (start < pivot - 1) {
+		await quickHoareSort(arr, start, pivot - 1);
+		console.log('called quickHoareSort');
+	}
+
+	if (end > pivot) {
+		await quickHoareSort(arr, pivot, end);
+	}
+
+	return arr;
+
+	// await quickSort(arr, start, pi - 1);
+	// await quickSort(arr, pi + 1, end);
+}
+
 // Quick Sort Partition
 
-async function partition(arr, start, end) {
+async function lomutoPartition(arr, start, end) {
 	let pivotValue = arr[end];
 	let pivotIndex = start;
 	for (let i = start; i < end; i++) {
@@ -116,6 +139,25 @@ async function partition(arr, start, end) {
 
 	await swap(arr, pivotIndex, end);
 	return pivotIndex;
+}
+
+async function hoarePartition(arr, start, end) {
+	let pivotValue = Math.floor((start + end) / 2);
+
+	while (start < end) {
+		while (arr[start] < pivotValue) {
+			start++;
+		}
+		while (arr[end] > pivotValue) {
+			end--;
+		}
+		if (start <= end) {
+			await swap(arr, start, end);
+			start++;
+			end--;
+		}
+	}
+	return start;
 }
 
 // ==== Support Functions ====
@@ -175,7 +217,8 @@ function renderInput() {
 	selAlgo.parent('input-div');
 	selAlgo.class('selAlgo');
 	selAlgo.option('Bubble Sort');
-	selAlgo.option('Quick Sort');
+	selAlgo.option('Quick Sort (Lomuto)');
+	selAlgo.option('Quick Sort (Hoare)');
 	// selAlgo.changed(changeAlgorithm);
 
 	// Create Reset Button
