@@ -30,12 +30,14 @@ function setup() {
 		values[i] = random(height);
 		states[i] = -1;
 	}
-	renderLines(values);
+	// bubbleSort(values);
+	// renderLines(values);
 	// quickSort(values, 0, values.length - 1);
 }
 
 function draw() {
 	background(100);
+	renderLines(values);
 
 	if (firstTime == true) {
 		renderLines(values);
@@ -43,9 +45,11 @@ function draw() {
 
 		// renderLines(values);
 	} else {
-		// quickSort(values, 0, values.length - 1);
-		//bubbleSort(values);
 		renderLines(values);
+		// quickSort(values, 0, values.length - 1);
+		if (selAlgo.value() === 'Bubble Sort') {
+			bubbleSort(values);
+		}
 		sorting = true;
 	}
 }
@@ -58,32 +62,62 @@ function draw() {
 
 // Bubble Sort
 function bubbleSort(arr) {
-	if ((sorting = false)) {
-		sorting = true;
-	}
+	sorting = true;
+	let bubble = true;
+	console.log('In bubble sort');
 
-	// Tells many times needed to loop
-	if (loops < arr.length) {
-		// Actually looping through the array and swaping when needed
-		if (j < arr.length - loops - 1) {
-			// How many swaps to do before rendering a new line in p5.js
-
-			for (i = 0; i < speed; i++) {
-				if (arr[j] > arr[j + 1]) {
-					swap(arr, j, j + 1);
+	while (bubble == true) {
+		// Tells many times needed to loop
+		if (loops < arr.length) {
+			// Actually looping through the array and swaping when needed
+			if (j < arr.length - loops - 1) {
+				// How many swaps to do before rendering a new line in p5.js
+				for (i = 0; i < speed; i++) {
+					if (arr[j] > arr[j + 1]) {
+						await swap(arr, j, j + 1);
+					}
+					j++;
 				}
-				j++;
+			} else {
+				// ===== Console Checking ===== //
+				// console.log(counter + ' passes complete, restarting');
+				// counter++;
+				// ===== Console Checking ===== //
+				j = 0;
+				loops++;
+				console.log('pass complete');
 			}
 		} else {
-			// ===== Console Checking ===== //
-			// console.log(counter + ' passes complete, restarting');
-			// counter++;
-			// ===== Console Checking ===== //
-			j = 0;
-			loops++;
+			console.log('finish');
+			bubble = false;
 		}
-	} else {
 	}
+	// // Tells many times needed to loop
+	// if (loops < arr.length) {
+	// 	console.log('In bubble loop 1 ');
+	// 	// Actually looping through the array and swaping when needed
+	// 	if (j < arr.length - loops - 1) {
+	// 		// How many swaps to do before rendering a new line in p5.js
+	// 		console.log('In bubble loop 2 ');
+	// 		for (i = 0; i < speed; i++) {
+	// 			if (arr[j] > arr[j + 1]) {
+	// 				console.log('In bubble loop 3 ');
+	// 				swap(arr, j, j + 1);
+	// 			}
+	// 			j++;
+	// 		}
+	// 	} else {
+	// 		// ===== Console Checking ===== //
+	// 		// console.log(counter + ' passes complete, restarting');
+	// 		// counter++;
+	// 		// ===== Console Checking ===== //
+	// 		j = 0;
+	// 		loops++;
+	// 		console.log('pass complete');
+	// 	}
+	// } else {
+	// 	console.log('finish');
+	// }
 	// else {
 	// 	sorting = false;
 	// 	console.log('finish');
@@ -180,6 +214,7 @@ function hoarePartition(arr, start, end) {
 // ==== Support Functions ====
 
 async function swap(arr, a, b) {
+	console.log('Swapping ' + arr[a] + ' and ' + arr[b]);
 	let temp = arr[a];
 	arr[a] = arr[b];
 	arr[b] = temp;
@@ -292,7 +327,7 @@ function setSpeed(value) {
 function resetAnimation() {
 	// If First time through, just start sort from current values
 	if (firstTime == true) {
-		quickSort(values, 0, values.length - 1);
+		// quickSort(values, 0, values.length - 1);
 		// bubbleSort(values);
 		firstTime = false;
 		sorting = false;
@@ -302,7 +337,6 @@ function resetAnimation() {
 		loops = 0;
 		j = 0;
 		numLines = slider.value();
-		speed = 100;
 		counter = 1;
 		setSpeed(selSpeed.value());
 		for (i = 0; i < numLines; i++) {
@@ -310,8 +344,9 @@ function resetAnimation() {
 			//values[i] = noise(i/100.0)*height;
 		}
 		// renderLines(values);
+		bubbleSort(values);
 		// bubbleSort(values);
 		// quickSort(values, 0, values.length - 1);
-		draw();
+		// draw();
 	}
 }
