@@ -15,7 +15,33 @@
 	<body>
 		<div class="content-container">
 			<div class="input-div" id="input-div">
+				<div class="slidecontainer">
+					<input
+						type="range"
+						min="10"
+						max="600"
+						value="300"
+						class="slider"
+						id="myRange"
+						onchange="updateSliderInput();"
+					/>
+				</div>
+				<span>Number of lines: <span id="slideCounter">300</span></span>
+				<select name="algorithm" id="algorithm">
+					<option disabled value="bubble">Bubble Sort</option>
+					<option selected value="lomuto">Quick Sort(Lomuto)</option>
+					<option disabled value="hoare">Quick Sort(Hoare)</option>
+					<option disabled value="merge">Merge Sort</option>
+				</select>
+				<select name="speed" id="speed-box" onchange="setSpeed();">
+					<option value="one">One Step</option>
+					<option value="slow">Slow</option>
+					<option selected value="medium">Medium</option>
+					<option value="fast">Fast</option>
+					<option value="fastest">Fastest</option>
+				</select>
 				<button id="go-btn" onclick="startAnimation();">Go!</button>
+				<button id="reset-btn" onclick="resetAnimation();">Reset!</button>
 				<div id="info-text"></div>
 			</div>
 			<div class="canvas-container" id="canvas-container"></div>
