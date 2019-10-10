@@ -183,7 +183,7 @@ function renderLines(arr) {
 	for (let i = 0; i < arr.length; i++) {
 		stroke('black');
 		if (states[i] == 0) {
-			fill('red');
+			fill('lightgreen');
 		} else if (states[i] == 1) {
 			fill('coral');
 		} else {
@@ -287,6 +287,7 @@ function resetAnimation() {
 	console.log('Clicked Reset');
 	// If First time through, just start sort from current values
 	if (firstTime == true) {
+		sorting = true;
 		let algo = selAlgo.value();
 		if (algo === 'Quick Sort (Lomuto)') {
 			console.log('Initializing Quick Sort (Lomuto)');
@@ -296,7 +297,6 @@ function resetAnimation() {
 			bubbleSort(values);
 		}
 		firstTime = false;
-		sorting = false;
 		// If not first time, reset values to default and call draw
 	} else {
 		console.log('Resetting values...');
@@ -310,6 +310,7 @@ function resetAnimation() {
 		for (i = 0; i < numLines; i++) {
 			values[i] = random(height);
 		}
+		sorting = true;
 		console.log('Get Algorithm from selection box');
 		let algo = selAlgo.value();
 		if (algo === 'Quick Sort (Lomuto)') {
