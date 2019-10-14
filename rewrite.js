@@ -67,7 +67,7 @@ async function startAnimation() {
 		if (algorithm === 'quick') {
 			sorting = true;
 			console.log('Starting Quicksort... Sorting ' + numLines + ' lines.');
-			await quickHoareSort(values, 0, values.length - 1);
+			quickHoareSort(values, 0, values.length - 1);
 			sorting = false;
 			console.log('Finished Quicksort! Sorted ' + numLines + ' lines.');
 		} else {
@@ -200,20 +200,16 @@ async function sleep(ms) {
 
 // Quick Sort
 async function quickHoareSort(arr, start, end) {
-	console.log('called quickHoareSort');
 	if (start >= end) {
 		return;
 	}
-	let pivot = await hoarePartition(arr, start, end);
+	let pivotValue = arr[Math.floor((start + end) / 2)];
+	let pivot = await hoarePartition(arr, start, end, pivotValue);
+	states[pivotValue] = 1;
+	states[pivot] = 1;
 
-	if (start < pivot - 1) {
-		await quickHoareSort(arr, start, pivot - 1);
-		console.log('called quickHoareSort');
-	}
-
-	if (end > pivot) {
-		await quickHoareSort(arr, pivot, end);
-	}
+	await quickHoareSort(arr, start, pivot - 1);
+	await quickHoareSort(arr, pivot, end);
 
 	return arr;
 
@@ -223,11 +219,9 @@ async function quickHoareSort(arr, start, end) {
 
 // Quick Sort Partition
 
-async function hoarePartition(arr, start, end) {
-	let pivotValue = Math.floor((start + end) / 2);
-
-	while (start < end) {
-		while (arr[start] < pivotValue) {
+async function hoarePartition(arr, start, end, pivotValue) {
+	while (start <= end) {
+		while (arr[start] < pivotValue && start <= end) {
 			start++;
 		}
 		while (arr[end] > pivotValue) {
