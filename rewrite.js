@@ -13,6 +13,8 @@ function setup() {
 	let cnv = createCanvas(1280, 500);
 	cnv.parent('canvas-container');
 
+	colorMode(HSB, height);
+
 	let val = document.getElementById('myRange').value;
 	numLines = val;
 	setSpeed();
@@ -40,19 +42,24 @@ function populateValues() {
 function generateLines() {
 	// Tell p5.js to render them to the screen.
 	for (let i = 0; i < values.length; i++) {
-		stroke('black');
-		if (states[i] == 0) {
-			fill('lightgreen');
-		} else if (states[i] == 1) {
-			fill('coral');
-		} else {
-			fill('white');
-		}
-		// let col = color(arr[i], height, height);
+		let col = color(values[i], height, height);
+		stroke('white');
+		fill(col);
 		let location = map(i, 0, values.length, 0, width);
-		// fill('lightblue');
-		stroke('black');
 		rect(location, height - values[i], width / numLines, height);
+		// stroke('black');
+		// if (states[i] == 0) {
+		// 	fill('lightgreen');
+		// } else if (states[i] == 1) {
+		// 	fill('coral');
+		// } else {
+		// 	fill(col);
+		// }
+		// // let col = color(arr[i], height, height);
+		// let location = map(i, 0, values.length, 0, width);
+		// // fill('lightblue');
+		// stroke('black');
+		// rect(location, height - values[i], width / numLines, height);
 	}
 }
 
@@ -61,17 +68,25 @@ async function startAnimation() {
 		console.log('Wait for previous sort to finish...');
 	} else {
 		resetAnimation();
-		let algorithm = 'quick';
+		let algo = document.getElementById('algorithm').value;
 		// let algo = document.getElementById('algo');
 		// console.log(algo.value);
-		if (algorithm === 'quick') {
+		if (algo === 'hoare') {
 			sorting = true;
-			console.log('Starting Quicksort... Sorting ' + numLines + ' lines.');
+			console.log(
+				'Starting Hoare Quicksort... Sorting ' + numLines + ' lines.'
+			);
 			quickHoareSort(values, 0, values.length - 1);
 			sorting = false;
-			console.log('Finished Quicksort! Sorted ' + numLines + ' lines.');
-		} else {
-			console.log('Error! That algorithm does not exist.');
+			console.log('Finished Hoare Quicksort! Sorted ' + numLines + ' lines.');
+		} else if (algo === 'lomuto') {
+			sorting = true;
+			console.log(
+				'Starting Lomuto Quicksort... Sorting ' + numLines + ' lines.'
+			);
+			quickSort(values, 0, values.length - 1);
+			sorting = false;
+			console.log('Finished Lomuto Quicksort! Sorted ' + numLines + ' lines.');
 		}
 	}
 }
@@ -188,7 +203,7 @@ async function lomutoPartition(arr, start, end) {
 
 // Swap function for sorts
 async function lomutoSwap(arr, a, b) {
-	await sleep(speed);
+	await sleep(1);
 	let temp = arr[a];
 	arr[a] = arr[b];
 	arr[b] = temp;
@@ -205,16 +220,13 @@ async function quickHoareSort(arr, start, end) {
 	}
 	let pivotValue = arr[Math.floor((start + end) / 2)];
 	let pivot = await hoarePartition(arr, start, end, pivotValue);
-	states[pivotValue] = 1;
-	states[pivot] = 1;
 
-	await quickHoareSort(arr, start, pivot - 1);
-	await quickHoareSort(arr, pivot, end);
+	await Promise.all([
+		await quickHoareSort(arr, start, pivot - 1),
+		await quickHoareSort(arr, pivot, end)
+	]);
 
 	return arr;
-
-	// await quickSort(arr, start, pi - 1);
-	// await quickSort(arr, pi + 1, end);
 }
 
 // Quick Sort Partition
