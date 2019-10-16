@@ -185,14 +185,14 @@ async function lomutoPartition(arr, start, end) {
 	states[pivotIndex] = 0;
 	for (let i = start; i < end; i++) {
 		if (arr[i] < pivotValue) {
-			await lomutoSwap(arr, i, pivotIndex);
+			await Swap(arr, i, pivotIndex);
 			states[pivotIndex] = -1;
 			pivotIndex++;
 			states[pivotIndex] = 0;
 		}
 	}
 
-	await lomutoSwap(arr, pivotIndex, end);
+	await Swap(arr, pivotIndex, end);
 	for (let i = start; i < end + 1; i++) {
 		if (i != pivotIndex) {
 			states[i] = -1;
@@ -202,8 +202,8 @@ async function lomutoPartition(arr, start, end) {
 }
 
 // Swap function for sorts
-async function lomutoSwap(arr, a, b) {
-	await sleep(1);
+async function Swap(arr, a, b) {
+	await sleep(speed);
 	let temp = arr[a];
 	arr[a] = arr[b];
 	arr[b] = temp;
@@ -218,6 +218,8 @@ async function quickHoareSort(arr, start, end) {
 	if (start >= end) {
 		return;
 	}
+
+	Math.pow(2);
 	let pivotValue = arr[Math.floor((start + end) / 2)];
 	let pivot = await hoarePartition(arr, start, end, pivotValue);
 
@@ -240,10 +242,28 @@ async function hoarePartition(arr, start, end, pivotValue) {
 			end--;
 		}
 		if (start <= end) {
-			await lomutoSwap(arr, start, end);
+			await Swap(arr, start, end);
 			start++;
 			end--;
 		}
 	}
 	return start;
+}
+
+function mergeSort(arr, start, end) {
+	if (arr.length <= 1) return;
+	if (start < end) return;
+
+	let middle = Math.floor((start + end) / 2);
+
+	mergeSort(arr, start, middle - 1);
+	mergeSort(arr, middle, end);
+
+	merge(arr, start, middle, end);
+}
+
+function merge(arr, start, middle, end) {
+	// Grab lengths of both 'partitions'
+	let a1 = middle - 1 - start;
+	let a2 = end - middle;
 }
