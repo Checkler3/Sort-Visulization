@@ -67,7 +67,9 @@ async function startAnimation() {
 	if (sorting) {
 		console.log('Wait for previous sort to finish...');
 	} else {
-		resetAnimation();
+		if (firstTime == false) {
+			resetAnimation();
+		}
 		let algo = document.getElementById('algorithm').value;
 		// let algo = document.getElementById('algo');
 		// console.log(algo.value);
@@ -76,16 +78,18 @@ async function startAnimation() {
 			console.log(
 				'Starting Hoare Quicksort... Sorting ' + numLines + ' lines.'
 			);
-			quickHoareSort(values, 0, values.length - 1);
+			await quickHoareSort(values, 0, values.length - 1);
 			sorting = false;
+			firstTime = true;
 			console.log('Finished Hoare Quicksort! Sorted ' + numLines + ' lines.');
 		} else if (algo === 'lomuto') {
 			sorting = true;
 			console.log(
 				'Starting Lomuto Quicksort... Sorting ' + numLines + ' lines.'
 			);
-			quickSort(values, 0, values.length - 1);
+			await quickSort(values, 0, values.length - 1);
 			sorting = false;
+			firstTime = true;
 			console.log('Finished Lomuto Quicksort! Sorted ' + numLines + ' lines.');
 		}
 	}
@@ -93,22 +97,22 @@ async function startAnimation() {
 
 function resetAnimation() {
 	// Set All Values to Default
-	if (sorting) {
-		console.log('Wait for previous sort to finish...');
-	} else {
-		let val = document.getElementById('myRange').value;
-		let speedInput = document.getElementById('speed-box').value;
-		numLines = val;
-		values = [];
-		loops = 0;
-		j = 0;
-		setSpeed();
-		firstTime = true;
-		sorting = false;
-		states = [];
-		// Repopulate Values
-		populateValues();
-	}
+	// if (sorting) {
+	// 	console.log('Wait for previous sort to finish...');
+	// } else {
+	let val = document.getElementById('myRange').value;
+	let speedInput = document.getElementById('speed-box').value;
+	numLines = val;
+	values = [];
+	loops = 0;
+	j = 0;
+	setSpeed();
+	firstTime = true;
+	sorting = false;
+	states = [];
+	// Repopulate Values
+	populateValues();
+	// }
 }
 
 function updateSliderInput() {
@@ -250,20 +254,49 @@ async function hoarePartition(arr, start, end, pivotValue) {
 	return start;
 }
 
+// Merge Sort
+// mergeSort() seperates array into halves recursivly until elements are in single arrays.
+// Then, merge() compares those two arrays to see which is larger
+// Finally, merge() combines elements into single list recursively
 function mergeSort(arr, start, end) {
 	if (arr.length <= 1) return;
 	if (start < end) return;
 
 	let middle = Math.floor((start + end) / 2);
 
+	left = arr.slice(0, mid - 1);
+	right = arr.slice(mid);
+
 	mergeSort(arr, start, middle - 1);
 	mergeSort(arr, middle, end);
 
-	merge(arr, start, middle, end);
+	return merge(arr, start, middle, end);
 }
 
 function merge(arr, start, middle, end) {
 	// Grab lengths of both 'partitions'
 	let a1 = middle - 1 - start;
 	let a2 = end - middle;
+}
+
+// Bubble Sort
+function bubbleSort(arr) {
+	// Tells many times needed to loop
+	if (loops < arr.length) {
+		// Actually looping through the array and swaping when needed
+		if (j < arr.length - loops - 1) {
+			// How many swaps to do before rendering a new line in p5.js
+
+			for (i = 0; i < speed; i++) {
+				if (arr[j] > arr[j + 1]) {
+					swap(arr, j, j + 1);
+				}
+				j++;
+			}
+		} else {
+			j = 0;
+			loops++;
+		}
+	} else {
+	}
 }
