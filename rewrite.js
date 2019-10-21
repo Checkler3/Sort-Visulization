@@ -258,26 +258,75 @@ async function hoarePartition(arr, start, end, pivotValue) {
 // mergeSort() seperates array into halves recursivly until elements are in single arrays.
 // Then, merge() compares those two arrays to see which is larger
 // Finally, merge() combines elements into single list recursively
-function mergeSort(arr, start, end) {
-	if (arr.length <= 1) return;
-	if (start < end) return;
+// function mergeSort(arr) {
+// 	if (arr.length === 1) return arr;
+// 	// if (start < end) return;
 
-	let middle = Math.floor((start + end) / 2);
+// 	let mid = Math.floor(arr.length / 2);
 
-	left = arr.slice(0, mid - 1);
-	right = arr.slice(mid);
+// 	left = arr.slice(0, mid);
+// 	right = arr.slice(mid);
 
-	mergeSort(arr, start, middle - 1);
-	mergeSort(arr, middle, end);
+// 	// mergeSort(arr, start, middle - 1);
+// 	// mergeSort(arr, middle, end);
 
-	return merge(arr, start, middle, end);
+// 	return merge(mergeSort(left), mergeSort(right));
+// }
+
+// function merge(left, right) {
+// 	let result = [];
+// 	let indexLeft = 0;
+// 	let indexRight = 0;
+
+// 	while (indexLeft < left.length && indexRight < right.length) {
+// 		if (left[indexLeft] < right[indexRight]) {
+// 			result.push(left[indexLeft]);
+// 			indexLeft++;
+// 		} else {
+// 			result.push(right[indexRight]);
+// 			indexRight++;
+// 		}
+// 	}
+
+// 	return result.concat(left.slice(indexLeft)).concat(right.slice(indexRight));
+// }
+
+function mergeSort(arr) {
+	if (arr.length === 1) {
+		// return once we hit an array with a single item
+		return arr;
+	}
+
+	const middle = Math.floor(arr.length / 2); // get the middle item of the array rounded down
+	const left = arr.slice(0, middle); // items on the left side
+	const right = arr.slice(middle); // items on the right side
+
+	return merge(mergeSort(left), mergeSort(right));
 }
 
-function merge(arr, start, middle, end) {
-	// Grab lengths of both 'partitions'
-	let a1 = middle - 1 - start;
-	let a2 = end - middle;
+// compare the arrays item by item and return the concatenated result
+function merge(left, right) {
+	let result = [];
+	let indexLeft = 0;
+	let indexRight = 0;
+
+	while (indexLeft < left.length && indexRight < right.length) {
+		if (left[indexLeft] < right[indexRight]) {
+			result.push(left[indexLeft]);
+			indexLeft++;
+		} else {
+			result.push(right[indexRight]);
+			indexRight++;
+		}
+	}
+
+	return result.concat(left.slice(indexLeft)).concat(right.slice(indexRight));
 }
+
+let array = [4, 6, 9, 2, 5, 1, 7, 4];
+console.log('Before: ' + array);
+mergeSort(array);
+console.log('After:' + mergeSort(array));
 
 // Bubble Sort
 function bubbleSort(arr) {
