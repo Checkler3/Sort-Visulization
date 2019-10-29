@@ -87,7 +87,8 @@ async function startAnimation() {
 			console.log(
 				'Starting Lomuto Quicksort... Sorting ' + numLines + ' lines.'
 			);
-			await quickSort(values, 0, values.length - 1);
+			// await quickSort(values, 0, values.length - 1);
+			mergeSort(values);
 			sorting = false;
 			firstTime = true;
 			console.log('Finished Lomuto Quicksort! Sorted ' + numLines + ' lines.');
@@ -258,25 +259,43 @@ async function hoarePartition(arr, start, end, pivotValue) {
 // mergeSort() seperates array into halves recursivly until elements are in single arrays.
 // Then, merge() compares those two arrays to see which is larger
 // Finally, merge() combines elements into single list recursively
-function mergeSort(arr, start, end) {
-	if (arr.length <= 1) return;
-	if (start < end) return;
+function mergeSort(arr) {
+	console.log('Called Merge Sort');
+	if (arr.length <= 1) {
+		return arr;
+	}
+	// if (start < end) return;
 
-	let middle = Math.floor((start + end) / 2);
+	let mid = Math.floor(arr.length / 2);
 
-	left = arr.slice(0, mid - 1);
+	left = arr.slice(0, mid);
 	right = arr.slice(mid);
 
-	mergeSort(arr, start, middle - 1);
-	mergeSort(arr, middle, end);
+	// mergeSort(arr, start, middle - 1);
+	// mergeSort(arr, middle, end);
+	return merge(mergeSort(left), mergeSort(right));
 
-	return merge(arr, start, middle, end);
+	// return merge(arr, start, middle, end);
 }
 
-function merge(arr, start, middle, end) {
-	// Grab lengths of both 'partitions'
-	let a1 = middle - 1 - start;
-	let a2 = end - middle;
+function merge(left, right) {
+	let result = [];
+	console.log(left);
+	console.log(right);
+	while (left.length && right.length) {
+		if (left[0] <= right[0]) {
+			result.push(left.shift());
+		} else {
+			result.push(right.shift());
+		}
+	}
+	while (left.length) {
+		result.push(left.shift());
+	}
+	while (right.length) {
+		result.push(right.shift());
+	}
+	return result;
 }
 
 // Bubble Sort
